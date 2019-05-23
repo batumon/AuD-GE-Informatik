@@ -1,0 +1,352 @@
+#include <iostream>
+using namespace std;
+
+template <class item_type>
+class Tabelle {
+
+
+	struct node {
+		node* next = NULL;
+		node* prev = NULL;
+		item_type item;
+	};
+
+	node* tail;
+	node* head;
+	node* iterator;
+	int length;
+
+public:
+	Tabelle()
+	{
+		length = 0;
+		tail = NULL;
+		head = NULL;
+		iterator = NULL;
+	}
+
+	~Tabelle()
+	{
+
+	}
+
+	bool insert(item_type r)
+	{
+		node* newnode = new node;
+		newnode->item = r;
+		length++;
+
+		if (!iterator)
+		{
+			iterator = newnode;
+			head = iterator;
+			tail = iterator;
+
+			return 0;
+		}
+		else 
+		{
+			newnode->next = iterator;
+
+			newnode->prev = iterator->prev;
+
+			if (iterator->prev)
+				iterator->prev->next = newnode;
+
+			iterator->prev = newnode;
+
+			iterator = newnode;
+
+			if (iterator->prev == NULL)
+			{
+				tail = iterator;
+			}
+
+			return 1;
+		}
+	}
+
+	bool append(item_type r)
+	{
+		node* newnode = new node;
+		newnode->item = r;
+		length++;
+
+		if (!iterator)
+		{
+			iterator = newnode;
+			head = iterator;
+			tail = iterator;
+
+			return 0;
+		}
+		else
+		{
+			newnode->prev = head;
+			head->next = newnode;
+			head = newnode;
+			return 1;
+		}
+
+	}
+
+	bool first()
+	{
+		if (iterator)
+		{
+			iterator = tail;
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
+	bool last()
+	{
+		if (iterator)
+		{
+			iterator = head;
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
+	bool prev()
+	{
+		if (iterator->prev)
+		{
+			iterator = iterator->prev;
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
+	bool next()
+	{
+		if (iterator->next)
+		{
+			iterator = iterator->next;
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
+	bool deletenode()
+	{
+		if (!iterator)
+		{
+			return 0;
+		}
+		else
+		{
+			length--;
+			node* todelete = iterator;
+
+			if (iterator->next)
+				iterator->next->prev = iterator->prev;
+			if (iterator->prev)
+				iterator->prev->next = iterator->next;
+
+			if (iterator->next)
+				iterator = iterator->next;
+			else
+				iterator = iterator->prev;
+
+			delete todelete;
+
+			return 1;
+
+		}
+	}
+
+	item_type getnode()
+	{
+		if (iterator)
+			return iterator->item;
+		else
+			return 0;
+	}
+
+	bool InsertionSort()
+	{
+		if (!iterator)
+		{
+			return 0;
+		}
+		else
+		{
+			
+
+			first();
+			next();
+
+			for (int i = 1; i < length; i++)
+			{
+				node *buffer = iterator;
+
+				first();
+
+				while (buffer->item > iterator->item)
+				{
+					/*cout << "vergleiche " << buffer->item << " mit " << iterator ->item<<endl;*/
+					next();
+				}
+
+				insert(buffer->item);
+
+				iterator = buffer;
+				deletenode();
+
+			}
+
+
+
+
+			return 1;
+		}
+	}
+
+	bool SelectionSort()
+	{
+		if (!iterator)
+		{
+			return 0;
+		}
+		else
+		{
+
+			auto swap = [](item_type &x, item_type &y) { item_type t = x; x = y; y = t; };
+			
+			node* lowest;
+			node* current;
+
+			first();
+			for (int i = 0; i < length; i++)
+			{
+				
+				current = iterator;
+				lowest = current;
+
+				for (int j = i; j < length; j++)
+				{
+					/*cout << "vergleiche " << lowest->item << " mit " << iterator->item << endl;*/
+
+					if (lowest->item > iterator->item)
+					{
+						lowest = iterator;
+					}
+					
+
+					next();
+				}
+
+				swap(lowest->item, current->item);
+
+				iterator = current;
+				next();
+			}
+
+
+
+
+			return 1;
+		}
+	}
+
+	bool BubbleSort()
+	{
+		if (!iterator)
+		{
+			return 0;
+		}
+		else
+		{
+
+			auto swap = [](item_type &x, item_type &y) { item_type t = x; x = y; y = t; };
+
+			bool sorted = 0;
+			while (!sorted)
+			{
+				first();
+				for (int i = 0; i < length; i++)
+				{
+					if (iterator->next)
+					{
+						/*cout << "vergleiche " << iterator->item << " mit " << iterator->next->item << endl;*/
+						if (iterator->item > iterator->next->item)
+						{
+							swap(iterator->item, iterator->next->item);
+						}
+					}
+						
+					next();
+				}
+
+				first();
+				sorted = 1;
+				for (int i = 0; i < length; i++)
+				{
+					if (iterator->next)
+					{
+						sorted = sorted && (iterator->item < iterator->next->item);
+						next();
+					}
+
+				}
+
+
+			}
+
+
+			return 1;
+		}
+	}
+
+
+};
+
+
+
+
+int main()
+{
+
+	Tabelle<int> t;
+
+	int a[9] = { 0,10,20,1,11,21,2,12,22 };
+
+	for (int i = 0; i < 9; i++)
+	{
+		t.append(a[i]);
+	}
+
+	for (int i = 0; i < 9; i++)
+	{
+		cout << t.getnode() << endl;
+		t.next();
+	}
+
+	cout << endl;
+	t.BubbleSort();
+	t.first();
+
+	for (int i = 0; i < 9; i++)
+	{
+		cout << t.getnode() << endl;
+		t.next();
+	}
+
+	system("pause");
+    return 0;
+}
