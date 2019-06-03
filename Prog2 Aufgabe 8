@@ -1,0 +1,98 @@
+#include "stdafx.h"
+#include <iostream>
+using namespace std;
+
+template <class item_type>
+class Array {
+
+private:
+
+	item_type *a;
+	int l;
+
+public:
+
+	Array()
+	{
+		l = 0;
+		a = NULL;
+	}
+
+	Array(int length )
+	{
+		l = length;
+		a = new item_type[l];
+	}
+
+	~Array()
+	{
+		delete a;
+	}
+
+
+	item_type get(int stelle)
+	{
+		return a[stelle];
+	}
+
+	void set(int stelle, item_type item)
+	{
+		a[stelle] = item;
+	}
+
+
+	void resize(int groesse)
+	{
+		
+		item_type *zwischenspeicher = new item_type[groesse];
+
+		for (int i = 0; i < groesse; i++)
+		{
+			if (i < l)
+			{
+				zwischenspeicher[i] = a[i];
+			}
+			else
+			{
+				zwischenspeicher[i] = 0;
+			}
+		}
+
+		delete a;
+		a = zwischenspeicher;
+
+		l = groesse;
+		
+	}
+
+	int getSize()
+	{
+		return l;
+	}
+
+};
+
+int main()
+{
+	Array<int> a(12);
+
+	for (int i = 0; i < a.getSize(); i++)
+	{
+		a.set(i, i);
+	}
+
+	for (int i = 0; i < a.getSize(); i++)
+	{
+		cout << a.get(i) << endl;
+	}
+	cout << endl;
+	a.resize(5);
+
+	for (int i = 0; i < a.getSize(); i++)
+	{
+		cout << a.get(i) << endl;
+	}
+
+	system("pause");
+    return 0;
+}
